@@ -19,7 +19,7 @@
 
 方式一：直接打开本仓库的 **[index.html](index.html)**（或访问 Pages 在线版），把题库 xlsx/xls 拖进去，点"开始转换"，下载成品 xlsx。
 
-方式二：GitHub Pages 在线版（仓库开启 Pages 后可用）：`https://<用户名>.github.io/question-bank-converter/`
+方式二：GitHub Pages 在线版（已开启，即开即用）：**https://theonlyweiyi.github.io/question-bank-converter/**
 
 > `index.html` 即本地工作环境中的「题库格式转换工具.html」，内容完全一致。
 
