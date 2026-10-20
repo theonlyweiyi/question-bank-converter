@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>题库格式转换工具 · 转导题模板导入格式</title>
+<style>
+:root{
+  --primary:#635bff; --primary-dark:#4f46e5; --primary-soft:#eef0ff;
+  --bg:#f6f7fb; --card:#ffffff; --border:#e5e7f0; --border-2:#d8dce8;
+  --text:#1a1f36; --text-2:#525c73; --text-3:#8a93a8;
+  --green:#0e9f6e; --green-bg:#e7f7f1;
+  --amber:#b45309; --amber-bg:#fdf3e3;
+  --red:#c81e1e; --red-bg:#fdecec;
+  --indigo:#4f46e5; --indigo-bg:#eef0ff;
+  --violet:#7c3aed; --violet-bg:#f3eeff;
+  --teal:#0d9488; --teal-bg:#e6f7f5;
+  --shadow:0 1px 2px rgba(26,31,54,.05),0 4px 16px rgba(26,31,54,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.65;min-height:100vh;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px 64px}
+
+/* ---------- 顶部 ---------- */
+.hero{
+  background:linear-gradient(120deg,#4f46e5 0%,#635bff 45%,#8b5cf6 100%);
+  color:#fff;padding:38px 20px 46px;margin-bottom:-28px;
+}
+.hero-in{max-width:1080px;margin:0 auto}
+.hero h1{font-size:24px;font-weight:700;letter-spacing:.5px;display:flex;align-items:center;gap:10px}
+.hero h1 .logo{
+  width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,.16);
+  display:inline-flex;align-items:center;justify-content:center;font-size:18px;flex:none;
+}
+.hero p{margin-top:8px;font-size:13.5px;opacity:.85;max-width:760px}
+.hero .tags{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+.hero .tag{
+  font-size:12px;padding:3px 10px;border-radius:999px;
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);
+}
+
+/* ---------- 卡片 ---------- */
+.card{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  box-shadow:var(--shadow);padding:22px 24px;margin-bottom:20px;
+}
+.card h2{font-size:15.5px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.card .sub{font-size:12.5px;color:var(--text-3);margin-bottom:14px}
+
+/* ---------- 拖拽区 ---------- */
+.dropzone{
+  border:2px dashed var(--border-2);border-radius:12px;background:#fafbfe;
+  padding:34px 20px;text-align:center;cursor:pointer;transition:all .18s ease;
+}
+.dropzone:hover{border-color:var(--primary);background:var(--primary-soft)}
+.dropzone.drag{border-color:var(--primary);background:var(--primary-soft);transform:scale(1.005)}
+.dropzone .icon{font-size:30px;margin-bottom:6px}
+.dropzone .main{font-size:14.5px;font-weight:600}
+.dropzone .hint{font-size:12.5px;color:var(--text-3);margin-top:4px}
+.opts{
+  display:flex;align-items:center;gap:10px;margin-top:14px;padding:12px 14px;
+  background:#fafbfe;border:1px solid var(--border);border-radius:10px;font-size:13px;flex-wrap:wrap;
+}
+.opts input[type=checkbox]{width:16px;height:16px;accent-color:var(--primary);cursor:pointer}
+.opts label{cursor:pointer;font-weight:600}
+.opts .note{color:var(--text-3);font-size:12px}
+
+/* ---------- 按钮 ---------- */
+.btn{
+  display:inline-flex;align-items:center;gap:7px;border:none;cursor:pointer;
+  font-size:13.5px;font-weight:600;padding:9px 18px;border-radius:9px;transition:all .15s ease;
+  font-family:inherit;
+}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-dark)}
+.btn-ghost{background:#fff;color:var(--text-2);border:1px solid var(--border-2)}
+.btn-ghost:hover{border-color:var(--primary);color:var(--primary)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* ---------- 统计卡 ---------- */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:12px;margin-bottom:6px}
+.stat{
+  background:#fafbfe;border:1px solid var(--border);border-radius:11px;
+  padding:13px 14px;text-align:center;transition:all .15s ease;
+}
+.stat .num{font-size:23px;font-weight:750;line-height:1.2}
+.stat .lbl{font-size:12px;color:var(--text-3);margin-top:2px}
+.stat.c-total .num{color:var(--primary)}
+.stat.c-single .num{color:var(--indigo)}
+.stat.c-multi .num{color:var(--violet)}
+.stat.c-tf .num{color:var(--teal)}
+.stat.c-excl .num{color:var(--amber)}
+.stat.c-dup .num{color:var(--red)}
+.stat.c-conflict .num{color:#b91c1c}
+.stat.c-conflict.hot{background:var(--red-bg);border-color:#f0c6c6}
+.stat.c-mis .num{color:var(--amber)}
+.stat.c-mis.hot{background:var(--amber-bg);border-color:#f0dcae}
+.stat.c-warn .num{color:var(--amber)}
+.stat.c-warn.hot{background:var(--amber-bg);border-color:#f0dcae}
+.dl-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:16px}
+.dl-row .ok{font-size:12.5px;color:var(--green);font-weight:600}
+
+/* ---------- 表格 ---------- */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:12.8px;background:#fff}
+th{
+  background:#f4f5fa;color:var(--text-2);font-weight:600;text-align:left;
+  padding:9px 12px;border-bottom:1px solid var(--border);white-space:nowrap;
+}
+td{padding:9px 12px;border-bottom:1px solid #eef0f6;vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.stem{max-width:340px}
+td.fname{max-width:230px}
+td.opt{max-width:300px}
+td .ell{display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom}
+.badge{
+  display:inline-block;font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:999px;white-space:nowrap;
+}
+.b-single{background:var(--indigo-bg);color:var(--indigo)}
+.b-multi{background:var(--violet-bg);color:var(--violet)}
+.b-tf{background:var(--teal-bg);color:var(--teal)}
+.b-vertical{background:var(--indigo-bg);color:var(--indigo)}
+.b-horizontal{background:var(--violet-bg);color:var(--violet)}
+.b-unknown{background:var(--red-bg);color:var(--red)}
+.diag-ico{display:inline-block;width:15px;height:15px;line-height:15px;border-radius:50%;
+  background:#faeeda;color:#854f0b;font-size:11px;font-weight:600;text-align:center;
+  margin-left:6px;cursor:help;vertical-align:middle}
+.b-empty{background:#eef0f6;color:var(--text-3)}
+.b-excl{background:var(--amber-bg);color:var(--amber)}
+.b-dup{background:var(--red-bg);color:var(--red)}
+.b-conflict{background:#fde8e8;color:#b91c1c;border:1px solid #f3c2c2}
+.b-optdiff{background:#eef0f6;color:var(--text-2)}
+.cf-bar{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-2);
+  padding:8px 10px;background:#fafbfe;border:1px solid var(--border);border-radius:8px;margin-top:10px;cursor:pointer}
+.cf-bar input{cursor:pointer}
+.cf-bar .cf-tip{color:var(--text-3);font-size:12px}
+.b-mis-src{background:#eef0f6;color:var(--text-2)}
+.b-mis-judged{background:var(--indigo-bg);color:var(--indigo)}
+.b-warn{background:var(--amber-bg);color:var(--amber)}
+a.rowlink{color:var(--primary-dark);font-weight:600;text-decoration:none;border-bottom:1px dashed var(--primary);cursor:pointer;padding:0 2px}
+a.rowlink:hover{background:var(--primary-soft);border-bottom-style:solid}
+.ans{font-weight:700;color:var(--primary-dark);white-space:nowrap}
+
+/* ---------- 折叠明细 ---------- */
+details{border:1px solid var(--border);border-radius:10px;margin-top:12px;overflow:hidden}
+details summary{
+  cursor:pointer;padding:11px 15px;font-size:13px;font-weight:600;background:#fafbfe;
+  list-style:none;display:flex;align-items:center;gap:8px;
+}
+details summary::-webkit-details-marker{display:none}
+details summary .arrow{transition:transform .15s;color:var(--text-3);font-size:11px}
+details[open] summary .arrow{transform:rotate(90deg)}
+details .body{padding:0 15px 15px}
+details .body .tbl-wrap{margin-top:10px}
+.none-tip{font-size:12.5px;color:var(--text-3);padding:12px 2px}
+
+/* ---------- 提示条 ---------- */
+.alert{
+  border-radius:10px;padding:11px 15px;font-size:13px;margin-bottom:14px;
+  display:flex;gap:9px;align-items:flex-start;
+}
+.alert-err{background:var(--red-bg);color:var(--red);border:1px solid #f5c6c6}
+.alert-info{background:var(--primary-soft);color:var(--primary-dark);border:1px solid #d4d8ff}
+.alert-warn{background:var(--amber-bg);color:var(--amber);border:1px solid #f0dcae}
+
+/* ---------- 说明 ---------- */
+.notes{font-size:13px;color:var(--text-2)}
+.notes h3{font-size:13.5px;color:var(--text);margin:14px 0 6px}
+.notes ul{padding-left:20px}
+.notes li{margin-bottom:4px}
+.notes code{
+  background:#f0f1f7;border-radius:5px;padding:1px 6px;font-size:12px;
+  font-family:Consolas,Menlo,monospace;color:var(--primary-dark);
+}
+.cols{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.col-chip{
+  font-size:11.8px;background:#f0f1f7;border:1px solid var(--border);border-radius:7px;
+  padding:3px 9px;font-family:Consolas,Menlo,monospace;
+}
+.footer{text-align:center;font-size:12px;color:var(--text-3);margin-top:8px}
+.hidden{display:none!important}
+
+@media (max-width:860px){
+  .stats{grid-template-columns:repeat(3,1fr)}
+}
+@media (max-width:520px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .hero{padding:28px 16px 40px}
+  .card{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-in">
+    <h1><span class="logo">⇄</span>题库格式转换工具</h1>
+    <p>把「竖排」（一题多行、Y 标答案）和「横排」（一行一题）题库，智能转换为《导题模板》的导入格式——表头用词、列位、答案写法（字母 / 正确·错误）自动适应，.xlsx / .xls 均可；同题干冲突、判型不一致、合并单元格分组异常全部报告不拦截。全程本地处理，文件不会上传到任何服务器。</p>
+    <div class="tags">
+      <span class="tag">竖排题库 · 附件2 式</span>
+      <span class="tag">横排题库 · 附件3 式</span>
+      <span class="tag">智能识别表头 / 答案</span>
+      <span class="tag">多文件 / 多 Sheet 合并</span>
+      <span class="tag">跨文件去重</span>
+      <span class="tag">同题干冲突检测</span>
+      <span class="tag">判型不一致 / 分组保护</span>
+      <span class="tag">报告联动预览</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- 上传 -->
+  <div class="card">
+    <h2>① 上传题库文件</h2>
+    <div class="sub">支持 .xlsx / .xls，可一次拖入多个文件；每个 sheet 会自动识别格式</div>
+    <div class="dropzone" id="dropzone">
+      <div class="icon">📂</div>
+      <div class="main">拖拽文件到这里，或点击选择</div>
+      <div class="hint">支持同时上传多个 xlsx，每个文件的每个 sheet 都会被解析</div>
+    </div>
+    <input type="file" id="fileInput" accept=".xlsx,.xls" multiple class="hidden">
+    <div class="opts">
+      <input type="checkbox" id="dedup" checked>
+      <label for="dedup">跨文件去重</label>
+      <span class="note">题干（忽略空白）+ 选项 + 答案相同的题只保留第一条（默认开启；两个题库常有重复题）</span>
+    </div>
+    <div id="fileList" style="margin-top:12px"></div>
+  </div>
+
+  <!-- 结果 -->
+  <div id="resultArea" class="hidden">
+
+    <div class="card">
+      <h2>② 转换结果</h2>
+      <div class="sub" id="resultSub"></div>
+      <div class="stats">
+        <div class="stat c-total"><div class="num" id="stTotal">0</div><div class="lbl">总题数</div></div>
+        <div class="stat c-single"><div class="num" id="stSingle">0</div><div class="lbl">单选题</div></div>
+        <div class="stat c-multi"><div class="num" id="stMulti">0</div><div class="lbl">多选题</div></div>
+        <div class="stat c-tf"><div class="num" id="stTf">0</div><div class="lbl">判断题</div></div>
+        <div class="stat c-excl"><div class="num" id="stExcl">0</div><div class="lbl">已剔除</div></div>
+        <div class="stat c-dup"><div class="num" id="stDup">0</div><div class="lbl">已去重</div></div>
+        <div class="stat c-conflict" id="stConflictBox"><div class="num" id="stConflict">0</div><div class="lbl">同题冲突</div></div>
+        <div class="stat c-mis" id="stMisBox"><div class="num" id="stMis">0</div><div class="lbl">判型不符</div></div>
+        <div class="stat c-warn" id="stWarnBox"><div class="num" id="stWarn">0</div><div class="lbl">分组警告</div></div>
+      </div>
+      <div class="dl-row">
+        <button class="btn btn-primary" id="btnDownload">⬇ 下载导入文件（xlsx）</button>
+        <button class="btn btn-ghost" id="btnReset">↺ 重新上传</button>
+        <span class="ok" id="dlOk"></span>
+      </div>
+      <div id="errors"></div>
+    </div>
+
+    <div class="card">
+      <h2>③ Sheet 识别明细</h2>
+      <div class="sub">竖排 = 题干/选项/是否正确答案 表头（一题占多行）；横排 = 序号/题型/题干/选项A…/答案 表头（一行一题）</div>
+      <div class="tbl-wrap"><table id="sheetTbl">
+        <thead><tr><th>文件</th><th>Sheet</th><th>识别格式</th><th>题数</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+
+      <details id="exclDetail">
+        <summary><span class="arrow">▶</span><span class="badge b-excl" id="exclBadge">剔除 0</span>查看被剔除的题目（残行、无答案、选项超限等，不进入成品）</summary>
+        <div class="body"><div class="tbl-wrap"><table>
+          <thead><tr><th>文件</th><th>Sheet</th><th>行号</th><th>原因</th><th>题干</th></tr></thead>
+          <tbody id="exclBody"></tbody>
+        </table></div></div>
+      </details>
+
+      <details id="dupDetail">
+        <summary><span class="arrow">▶</span><span class="badge b-dup" id="dupBadge">去重 0</span>查看被去重的题目</summary>
+        <div class="body"><div class="tbl-wrap"><table>
+          <thead><tr><th>文件</th><th>Sheet</th><th>行号</th><th>题干</th></tr></thead>
+          <tbody id="dupBody"></tbody>
+        </table></div></div>
+      </details>
+
+      <details id="conflictDetail">
+        <summary><span class="arrow">▶</span><span class="badge b-conflict" id="conflictBadge">冲突 0</span>同题干不同答案 / 选项的题（<b>已保留在成品中</b>，需人工裁决后再导入）</summary>
+        <div class="body">
+          <label class="cf-bar"><input type="checkbox" id="cfCriticalOnly"> 仅看答案冲突 <span class="badge b-conflict" id="cfCriticalN">0</span><span class="cf-tip">（答案矛盾的组，导入前必须裁决）</span></label>
+          <div id="conflictBody"></div>
+        </div>
+      </details>
+
+      <details id="misDetail">
+        <summary><span class="arrow">▶</span><span class="badge b-mis" id="misBadge">判型不符 0</span>源文件标注的题型与按答案内容判出的题型不一致（已按答案判型，点行号定位查看）</summary>
+        <div class="body"><div class="tbl-wrap"><table>
+          <thead><tr><th>文件</th><th>Sheet</th><th>行号</th><th>源标注</th><th>判型结果</th><th>题干</th></tr></thead>
+          <tbody id="misBody"></tbody>
+        </table></div></div>
+      </details>
+
+      <details id="warnDetail">
+        <summary><span class="arrow">▶</span><span class="badge b-warn" id="warnBadge">警告 0</span>分组异常：题干合并区之外的选项行、孤立选项行等（点行号定位查看）</summary>
+        <div class="body"><div class="tbl-wrap"><table>
+          <thead><tr><th>文件</th><th>Sheet</th><th>行号</th><th>类型</th><th>说明</th></tr></thead>
+          <tbody id="warnBody"></tbody>
+        </table></div></div>
+      </details>
+    </div>
+
+    <div class="card" id="previewCard">
+      <h2>④ 成品预览<span id="previewMode" style="font-size:12px;font-weight:600;color:var(--text-3);margin-left:6px"></span></h2>
+      <div class="sub">下载的文件即为此结构：A=题干、B=答案、C=解析、D 起为选项 A–G；数据从第 1 行开始，无说明行</div>
+      <button class="btn btn-ghost hidden" id="btnPreviewBack" style="margin-bottom:10px">← 返回前 30 题预览</button>
+      <button class="btn btn-ghost" id="btnPreviewAll" style="margin-bottom:10px;margin-left:8px">显示全部</button>
+      <div class="tbl-wrap"><table id="previewTbl">
+        <thead><tr><th>#</th><th>题型</th><th>题干</th><th>答案</th><th>解析</th><th>选项</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+
+  </div>
+
+  <!-- 说明 -->
+  <div class="card notes">
+    <h2>📋 格式说明与使用注意</h2>
+    <h3>输出结构（与《导题模板 (1).xlsx》一致）</h3>
+    <div class="cols">
+      <span class="col-chip">A 题干</span><span class="col-chip">B 答案</span><span class="col-chip">C 解析</span>
+      <span class="col-chip">D 选项A</span><span class="col-chip">E 选项B</span><span class="col-chip">F 选项C</span>
+      <span class="col-chip">G 选项D</span><span class="col-chip">H 选项E</span><span class="col-chip">I 选项F</span><span class="col-chip">J 选项G</span>
+    </div>
+    <ul>
+      <li>单选题：答案为单个字母（如 <code>B</code>）；多选题：答案为字母串（如 <code>ABCD</code>）；判断题：答案为 <code>正确</code> / <code>错误</code>，选项列留空</li>
+      <li>Sheet 名沿用模板：<code>工作表 1 - 导入模板</code>（数据）+ <code>任选</code>（空，源数据无任选题）</li>
+      <li>下载的文件数据从第 1 行开始，不含模板里的说明行，可直接导入</li>
+    </ul>
+    <h3>源格式识别规则（智能识别）</h3>
+    <ul>
+      <li><b>竖排</b>：表头含「题干 / 选项 / 是否正确答案」（同义词自动匹配，兼容前面带 序号|题号 列的版本），一题占多行，正确选项所在行标 <code>Y</code>；sheet 名含「判断」或选项全是 正确/错误 时按判断题处理（答案取 正确/错误，选项列留空）</li>
+      <li><b>横排</b>：表头含「题干（或题目/试题）/ 答案 + 至少一个 选项X 列」，一行一题；题型列叫「题型」或「类型」均可，缺失时按内容判断；判断题答案支持 字母 A/B、中文 正确/错误、对/错 等写法，统一归一</li>
+      <li>个别题答案列直接写选项文本（如写「300」而非「D」）时，自动与选项比对映射为字母</li>
+      <li>表头搜索范围为前 50 行（兼容前面有标题/填报须知的文件）；sheet 无法识别时，「Sheet 识别明细」该行会带诊断提示（缺哪些关键列）</li>
+      <li>题型判为判断题但选项列有值时，按模板规范不带入选项列，并在「分组警告」中列出</li>
+      <li>解析列的「无」会转为空白；单元格按 Excel 显示文本导入（如 1%、16:00）</li>
+    </ul>
+    <h3>自动剔除规则（不计入成品，会在上方报告中列出）</h3>
+    <ul>
+      <li>没有正确答案（未标 Y / 答案列为空）的残行</li>
+      <li>选项超过 7 个的题（模板最多支持到 G 列）</li>
+      <li>答案字母超出选项范围的题</li>
+      <li>开启去重时，题干（忽略空白差异）+ 选项 + 答案相同的重复题只保留第一条</li>
+    </ul>
+    <h3>同题干冲突检测（只报告、不拦截）</h3>
+    <ul>
+      <li>题干相同（忽略空白差异）但<b>答案不同</b>的题，会以红色「答案冲突」列出——这类题一旦两个答案都进正式题库会直接导致考试误判，<b>必须人工裁决后再导入</b></li>
+      <li>题干相同、答案相同但<b>选项不同</b>的题，以灰色「选项差异」列出——通常是不同年份题库修订了选项，需确认以哪版为准</li>
+      <li>冲突题全部保留在成品中，工具不替人做业务判断；去重关闭时，完全重复的题不算冲突</li>
+      <li>报告里的<b>行号可以点击</b>，会在下方预览中定位到该题全文；冲突组头部的「查看全部 N 处」可一次看完组内所有出现位置</li>
+    </ul>
+    <h3>判型不一致报告（只报告、不拦截）</h3>
+    <ul>
+      <li>题型按<b>答案内容</b>判定（单字母=单选、多字母=多选、选项空且答案为 正确/错误=判断）；当源文件标注的题型与判型结果不一致时列出</li>
+      <li>典型情况：源标注写错（如类型标「单选题」实际是判断题）、答案多字母却标单选等——按答案判型比按标注更可靠，但请抽看确认</li>
+    </ul>
+    <h3>分组保护（竖排格式）</h3>
+    <ul>
+      <li>题干列被<b>纵向合并单元格</b>时，合并区覆盖的行视为该题范围；选项行若出现在合并区之外（下一个题干出现之前），仍然并入当前题不丢数据，但会在「分组警告」中列出，防止串题被静默吸收</li>
+      <li>首个题干之前出现的孤立选项行同样记入警告</li>
+    </ul>
+    <h3>其他</h3>
+    <ul>
+      <li>本工具完全在浏览器本地运行，不联网、不上传，可离线双击打开使用</li>
+      <li>源文件中的难度、分值、出题部门等字段在模板中没有对应列，不会带入</li>
+    </ul>
+  </div>
+
+  <div class="footer">题库格式转换工具 · 本地单文件应用 · SheetJS 内置</div>
+</div>
+
+<script>
+/*__XLSX_LIB__*/
+</script>
+<script>
+/*__CORE_JS__*/
+</script>
+<script>
+(function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  var dropzone=$("dropzone"), fileInput=$("fileInput"), fileListEl=$("fileList");
+  var resultArea=$("resultArea"), errorsEl=$("errors");
+  var state={ result:null, preview:null, previewAll:false, conflictCriticalOnly:false };
+
+  /* ---------- 上传交互 ---------- */
+  dropzone.addEventListener("click", function(){ fileInput.click(); });
+  fileInput.addEventListener("change", function(){ handleFiles(fileInput.files); fileInput.value=""; });
+  ["dragenter","dragover"].forEach(function(ev){
+    dropzone.addEventListener(ev, function(e){ e.preventDefault(); dropzone.classList.add("drag"); });
+  });
+  ["dragleave","drop"].forEach(function(ev){
+    dropzone.addEventListener(ev, function(e){ e.preventDefault(); dropzone.classList.remove("drag"); });
+  });
+  dropzone.addEventListener("drop", function(e){
+    var files = e.dataTransfer && e.dataTransfer.files;
+    if (files && files.length) handleFiles(files);
+  });
+
+  function esc(s){
+    return String(s==null?"":s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+  function cut(s,n){ s=String(s==null?"":s); return s.length>n ? s.slice(0,n)+"…" : s; }
+
+  /* 报告行号 → 可点击链接（P1-⑧ 报告联动预览）。
+   * item 需含 file/sheet/row；warnings 用 qrow（关联题的行号，0 = 无关联题）。 */
+  function rowLink(item){
+    var qrow = item.qrow != null ? item.qrow : item.row;
+    if(!qrow) return item.row;
+    return '<a class="rowlink" data-f="'+esc(item.file)+'" data-s="'+esc(item.sheet)+'" data-r="'+qrow+'" title="点击在下方预览中定位这一题">'+item.row+'</a>';
+  }
+  function findQ(file, sheet, row){
+    var all=state.result.all;
+    for(var i=0;i<all.length;i++){
+      var q=all[i];
+      if(q.src.file===file && q.src.sheet===sheet && q.src.row===row) return q;
+    }
+    return null;
+  }
+  function locate(file, sheet, row, title){
+    var q=findQ(file, sheet, row);
+    state.preview = q ? { title: title||("定位 "+file.slice(0,10)+" · "+sheet+" 第 "+row+" 行"), items:[q] }
+                      : { title:"定位失败", items:[] };
+    render();
+    var el=document.getElementById("previewCard");
+    if(el) el.scrollIntoView({behavior:"smooth", block:"start"});
+  }
+  document.addEventListener("click", function(e){
+    var t=e.target;
+    if(!t || !t.classList || !t.classList.contains("rowlink")) return;
+    e.preventDefault();
+    var gi=t.getAttribute("data-gi");
+    if(gi!=null){
+      var c=state.result.report.conflicts[+gi];
+      if(!c) return;
+      var items=[];
+      c.occurrences.forEach(function(o){ var q=findQ(o.file,o.sheet,o.row); if(q) items.push(q); });
+      state.preview={ title:"冲突组全部 "+items.length+" 处", items:items };
+      render();
+      var el=document.getElementById("previewCard");
+      if(el) el.scrollIntoView({behavior:"smooth", block:"start"});
+      return;
+    }
+    locate(t.getAttribute("data-f"), t.getAttribute("data-s"), +t.getAttribute("data-r"));
+  });
+
+  /* 预览：前 30 题 ↔ 全部切换（局部重渲染，不动报告区） */
+  $("btnPreviewAll").addEventListener("click", function(){
+    state.previewAll=!state.previewAll;
+    renderPreview();
+  });
+
+  /* 冲突区：仅看答案冲突筛选（局部重渲染） */
+  $("cfCriticalOnly").addEventListener("change", function(){
+    state.conflictCriticalOnly=this.checked;
+    renderConflicts(state.result, state.result.report.conflicts.filter(function(c){return c.critical;}).length);
+  });
+
+  function handleFiles(fileList){
+    var files=Array.prototype.slice.call(fileList||[]);
+    if(!files.length) return;
+    var ok=[], skipped=[];
+    files.forEach(function(f){
+      if(/\.(xlsx|xls)$/i.test(f.name)) ok.push(f); else skipped.push(f.name);
+    });
+    renderFileList(ok, skipped);
+    if(ok.length) readAll(ok);
+  }
+
+  function renderFileList(ok, skipped){
+    var html="";
+    ok.forEach(function(f){
+      html+='<div style="display:flex;align-items:center;gap:8px;font-size:13px;padding:7px 11px;background:#fafbfe;border:1px solid var(--border);border-radius:8px;margin-bottom:6px">'
+        +'<span style="color:var(--primary)">📄</span><span style="font-weight:600">'+esc(f.name)+'</span>'
+        +'<span style="color:var(--text-3);font-size:12px;margin-left:auto" class="fstatus">'+(f.size/1024).toFixed(0)+' KB · 解析中…</span></div>';
+    });
+    skipped.forEach(function(n){
+      html+='<div style="font-size:12.5px;color:var(--red);padding:4px 0">⚠ 已跳过（不是 xlsx/xls）：'+esc(n)+'</div>';
+    });
+    fileListEl.innerHTML=html;
+  }
+
+  function readAll(files){
+    var all=[], sheetReports=[], warnings=[], errors=[], pending=files.length;
+    if(!pending){ finish(all, sheetReports, warnings, errors); return; }
+    files.forEach(function(f){
+      var reader=new FileReader();
+      reader.onload=function(){
+        try{
+          var wb=XLSX.read(new Uint8Array(reader.result), {type:"array"});
+          var p=QBankCore.parseFile(wb, f.name);
+          sheetReports=sheetReports.concat(p.report.sheets);
+          warnings=warnings.concat(p.report.warnings||[]);
+          all=all.concat(p.questions);
+        }catch(err){
+          errors.push({file:f.name, msg:(err&&err.message)||String(err)});
+        }
+        if(--pending===0) finish(all, sheetReports, warnings, errors);
+      };
+      reader.onerror=function(){
+        errors.push({file:f.name, msg:"文件读取失败"});
+        if(--pending===0) finish(all, sheetReports, warnings, errors);
+      };
+      reader.readAsArrayBuffer(f);
+    });
+  }
+
+  /* ---------- 结果渲染 ---------- */
+  function finish(all, sheetReports, warnings, errors){
+    var fin=QBankCore.finalize(all, {dedup:$("dedup").checked});
+    state.result={ questions:fin.questions, report:fin.report, all:all, warnings:warnings, sheetReports:sheetReports, errors:errors };
+    state.preview=null;
+    var sts=fileListEl.querySelectorAll(".fstatus");
+    for(var i=0;i<sts.length;i++) sts[i].textContent="✓ 已解析";
+    render();
+    resultArea.classList.remove("hidden");
+    resultArea.scrollIntoView({behavior:"smooth", block:"start"});
+  }
+
+  function render(){
+    var r=state.result, qs=r.questions;
+    var dist={ "单选题":0, "多选题":0, "判断题":0 };
+    qs.forEach(function(q){ if(dist[q.type]!=null) dist[q.type]++; });
+    $("stTotal").textContent=qs.length;
+    $("stSingle").textContent=dist["单选题"];
+    $("stMulti").textContent=dist["多选题"];
+    $("stTf").textContent=dist["判断题"];
+    $("stExcl").textContent=r.report.excluded.length;
+    $("stDup").textContent=r.report.dups.length;
+    var nConflict=r.report.conflicts.length;
+    var nCritical=r.report.conflicts.filter(function(c){return c.critical;}).length;
+    var nMis=r.report.typeMismatch.length;
+    var nWarn=r.warnings.length;
+    $("stConflict").textContent=nConflict;
+    $("stConflictBox").classList.toggle("hot", nConflict>0);
+    $("stMis").textContent=nMis;
+    $("stMisBox").classList.toggle("hot", nMis>0);
+    $("stWarn").textContent=nWarn;
+    $("stWarnBox").classList.toggle("hot", nWarn>0);
+    $("resultSub").textContent="共解析 "+r.sheetReports.reduce(function(n,s){return n+s.count;},0)
+      +" 题，成品 "+qs.length+" 题"+(r.report.dups.length?"（去重 "+r.report.dups.length+" 题）":"")
+      +(r.report.excluded.length?"（剔除 "+r.report.excluded.length+" 题）":"")
+      +(nConflict?"（同题干冲突 "+nConflict+" 组，其中答案冲突 "+nCritical+" 组）":"")
+      +(nMis?"（判型不符 "+nMis+" 题）":"")+(nWarn?"（分组警告 "+nWarn+" 处）":"");
+
+    // 错误
+    errorsEl.innerHTML="";
+    if(r.errors.length){
+      errorsEl.innerHTML='<div class="alert alert-err" style="margin-top:14px"><span>⚠</span><div>'
+        +r.errors.map(function(e){ return esc(e.file)+"："+esc(e.msg); }).join("<br>")+'</div></div>';
+    }
+    if(!qs.length && !r.errors.length){
+      errorsEl.innerHTML='<div class="alert alert-warn" style="margin-top:14px"><span>⚠</span><div>没有识别到任何题目，请确认文件格式是否为受支持的竖排/横排题库。</div></div>';
+    }
+    if(nConflict){
+      errorsEl.innerHTML+='<div class="alert alert-warn" style="margin-top:14px"><span>⚠</span><div>'
+        +'发现 <b>'+nConflict+'</b> 组题干相同但答案/选项不一致的题（其中 <b>'+nCritical+'</b> 组<b>答案不同</b>）。'
+        +'这些题已全部保留在成品中——同一题干两个答案会导致考试误判，请先展开下方「同题干冲突」逐组裁决（保留哪一个、或回源修正），再执行导入。</div></div>';
+    }
+
+    // sheet 明细
+    var tb=document.querySelector("#sheetTbl tbody"); tb.innerHTML="";
+    r.sheetReports.forEach(function(s){
+      var badge = s.layout==="竖排"?'<span class="badge b-vertical">竖排</span>'
+        : s.layout==="横排"?'<span class="badge b-horizontal">横排</span>'
+        : s.layout==="空表"?'<span class="badge b-empty">空表</span>'
+        : '<span class="badge b-unknown" title="'+esc(s.diag&&s.diag.hint||"")+'">无法识别</span>'
+          +'<span class="diag-ico" title="'+esc(s.diag&&s.diag.hint||"")+'">?</span>';
+      var tr=document.createElement("tr");
+      tr.innerHTML="<td class=\"fname\"><span class=\"ell\" title=\""+esc(s.file)+"\">"+esc(s.file)+"</span></td><td>"+esc(s.sheet)+"</td><td>"+badge+"</td><td>"+s.count+"</td>";
+      tb.appendChild(tr);
+    });
+
+    // 剔除明细（行号可点击 → 定位预览）
+    $("exclBadge").textContent="剔除 "+r.report.excluded.length;
+    var eb=$("exclBody"); eb.innerHTML="";
+    r.report.excluded.forEach(function(e){
+      var tr=document.createElement("tr");
+      tr.innerHTML="<td class=\"fname\"><span class=\"ell\" title=\""+esc(e.file)+"\">"+esc(e.file)+"</span></td><td>"+esc(e.sheet)+"</td><td>"+rowLink(e)+"</td><td>"+esc(e.reason)+"</td><td class=\"stem\"><span class=\"ell\" title=\""+esc(e.stem)+"\">"+esc(e.stem)+"</span></td>";
+      eb.appendChild(tr);
+    });
+    $("exclDetail").open = r.report.excluded.length>0;
+
+    // 去重明细（行号可点击 → 定位预览）
+    $("dupBadge").textContent="去重 "+r.report.dups.length;
+    var db=$("dupBody"); db.innerHTML="";
+    r.report.dups.forEach(function(d){
+      var tr=document.createElement("tr");
+      tr.innerHTML="<td class=\"fname\"><span class=\"ell\" title=\""+esc(d.file)+"\">"+esc(d.file)+"</span></td><td>"+esc(d.sheet)+"</td><td>"+rowLink(d)+"</td><td class=\"stem\"><span class=\"ell\" title=\""+esc(d.stem)+"\">"+esc(d.stem)+"</span></td>";
+      db.appendChild(tr);
+    });
+    $("dupDetail").open = r.report.dups.length>0;
+
+    // 同题干冲突明细（按组渲染：组头 + 出现位置表；支持“仅看答案冲突”筛选）
+    renderConflicts(r, nCritical);
+
+    // 判型不一致明细（行号可点击 → 定位预览）
+    $("misBadge").textContent="判型不符 "+nMis;
+    var mb=$("misBody"); mb.innerHTML="";
+    r.report.typeMismatch.forEach(function(m){
+      var tr=document.createElement("tr");
+      tr.innerHTML="<td class=\"fname\"><span class=\"ell\" title=\""+esc(m.file)+"\">"+esc(m.file)+"</span></td><td>"+esc(m.sheet)+"</td><td>"+rowLink(m)+"</td>"
+        +"<td><span class=\"badge b-mis-src\">"+esc(m.srcType)+"</span></td>"
+        +"<td><span class=\"badge b-mis-judged\">"+esc(m.judged)+"</span></td>"
+        +"<td class=\"stem\"><span class=\"ell\" title=\""+esc(m.stem)+"\">"+esc(m.stem)+"</span></td>";
+      mb.appendChild(tr);
+    });
+    $("misDetail").open = nMis>0;
+
+    // 分组警告明细（有关联题的行号可点击 → 定位预览）
+    $("warnBadge").textContent="警告 "+nWarn;
+    var wb=$("warnBody"); wb.innerHTML="";
+    r.warnings.forEach(function(w){
+      var tr=document.createElement("tr");
+      tr.innerHTML="<td class=\"fname\"><span class=\"ell\" title=\""+esc(w.file)+"\">"+esc(w.file)+"</span></td><td>"+esc(w.sheet)+"</td><td>"+rowLink(w)+"</td>"
+        +"<td>"+esc(w.kind)+"</td><td>"+esc(w.text)+"</td>";
+      wb.appendChild(tr);
+    });
+    $("warnDetail").open = nWarn>0;
+
+    // 预览（默认前 30 题；可切换全部；报告行点击后切换为定位视图）
+    renderPreview();
+
+    $("btnDownload").disabled = !qs.length;
+    $("dlOk").textContent = qs.length ? "✓ 已生成 "+qs.length+" 题，可直接导入" : "";
+  }
+
+  /* 冲突区渲染（render 与筛选复选框共用；gi 始终为原数组索引，供“查看全部”定位） */
+  function renderConflicts(r, nCritical){
+    $("conflictBadge").textContent="冲突 "+r.report.conflicts.length+(nCritical?("（答案冲突 "+nCritical+"）"):"");
+    $("cfCriticalN").textContent=nCritical;
+    var cb=$("conflictBody"); cb.innerHTML="";
+    var list=[];
+    r.report.conflicts.forEach(function(c, gi){
+      if(state.conflictCriticalOnly && !c.critical) return;
+      list.push({c:c, gi:gi});
+    });
+    if(!list.length){
+      cb.innerHTML='<div class="none-tip">'+(state.conflictCriticalOnly?"没有答案冲突的组。":"未发现同题干不同答案/选项的题。")+'</div>';
+    }
+    list.forEach(function(item){
+      var c=item.c, gi=item.gi;
+      var wrap=document.createElement("div");
+      wrap.style.cssText="border:1px solid var(--border);border-radius:9px;margin-top:10px;overflow:hidden";
+      var badge=c.critical?'<span class="badge b-conflict">'+esc(c.diff)+'</span>'
+        :'<span class="badge b-optdiff">'+esc(c.diff)+'</span>';
+      var hdr='<div style="display:flex;gap:8px;align-items:flex-start;padding:9px 12px;background:'
+        +(c.critical?"#fdf3f3":"#fafbfe")+';border-bottom:1px solid var(--border);font-size:12.8px">'
+        +badge+'<span style="font-weight:600;flex:1;word-break:break-all">'+esc(c.stem)+'</span>'
+        +'<a class="rowlink" data-gi="'+gi+'" style="white-space:nowrap">查看全部 '+c.occurrences.length+' 处 →</a></div>';
+      var rows=c.occurrences.map(function(o){
+        var optTxt=o.options.join(" ／ ");
+        return "<tr><td class=\"fname\"><span class=\"ell\" title=\""+esc(o.file)+"\">"+esc(o.file)+"</span></td><td>"+esc(o.sheet)+"</td><td>"+rowLink(o)+"</td>"
+          +"<td>"+esc(o.type)+"</td><td class=\"ans\">"+esc(o.answer)+"</td>"
+          +"<td class=\"opt\">"+(optTxt?'<span class="ell" title="'+esc(optTxt)+'">'+esc(optTxt)+'</span>':'<span style="color:var(--text-3)">—</span>')+"</td></tr>";
+      }).join("");
+      wrap.innerHTML=hdr+'<div class="tbl-wrap" style="border:none;border-radius:0"><table>'
+        +'<thead><tr><th>文件</th><th>Sheet</th><th>行号</th><th>题型</th><th>答案</th><th>选项</th></tr></thead>'
+        +'<tbody>'+rows+'</tbody></table></div>';
+      cb.appendChild(wrap);
+    });
+    $("conflictDetail").open = nCritical>0;
+  }
+
+  /* 预览渲染（render 与“显示全部”切换共用；pv = 报告联动定位视图） */
+  function renderPreview(){
+    var r=state.result, qs=r.questions;
+    var pv=state.preview;
+    var items = pv ? pv.items : (state.previewAll ? qs : qs.slice(0,30));
+    $("previewMode").textContent = pv ? ("· "+pv.title) : (state.previewAll ? "（全部 "+qs.length+" 题）" : "（前 30 题）");
+    $("btnPreviewBack").classList.toggle("hidden", !pv);
+    var ba=$("btnPreviewAll");
+    ba.classList.toggle("hidden", !!pv || !qs.length);
+    ba.textContent = state.previewAll ? "只看前 30 题" : "显示全部 "+qs.length+" 题";
+    var pb=document.querySelector("#previewTbl tbody"); pb.innerHTML="";
+    items.forEach(function(q,i){
+      var badge = q.type==="单选题"?'<span class="badge b-single">单选</span>'
+        : q.type==="多选题"?'<span class="badge b-multi">多选</span>'
+        : '<span class="badge b-tf">判断</span>';
+      var opts=q.options.filter(function(o){return o;}).map(function(o,j){
+        return "<span class=\"ell\" title=\""+esc(o)+"\">"+String.fromCharCode(65+j)+". "+esc(o)+"</span>";
+      }).join("<br>");
+      var tr=document.createElement("tr");
+      tr.innerHTML="<td>"+(pv?("r"+q.src.row):(i+1))+"</td><td>"+badge+"</td>"
+        +"<td class=\"stem\"><span class=\"ell\" title=\""+esc(q.stem)+"\">"+esc(q.stem)+"</span></td>"
+        +"<td class=\"ans\">"+esc(q.answer)+"</td>"
+        +"<td class=\"stem\"><span class=\"ell\" title=\""+esc(q.jiexi)+"\">"+esc(q.jiexi)+"</span></td>"
+        +"<td class=\"opt\">"+(opts||'<span style="color:var(--text-3)">—</span>')+"</td>";
+      pb.appendChild(tr);
+    });
+    if(pv && !items.length){
+      pb.innerHTML='<tr><td colspan="6" class="none-tip">未找到对应题目（可能已被去重剔除）。</td></tr>';
+    }
+  }
+
+  /* ---------- 下载 ---------- */
+  $("btnDownload").addEventListener("click", function(){
+    if(!state.result || !state.result.questions.length) return;
+    var wb=QBankCore.buildWorkbook(state.result.questions);
+    var u8=XLSX.write(wb, {bookType:"xlsx", type:"array", compression:true});
+    var blob=new Blob([u8], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+    var a=document.createElement("a");
+    var d=new Date();
+    var pad=function(n){ return (n<10?"0":"")+n; };
+    a.href=URL.createObjectURL(blob);
+    a.download="题库导入表_"+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+"_"+pad(d.getHours())+pad(d.getMinutes())+".xlsx";
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 800);
+  });
+
+  $("btnReset").addEventListener("click", function(){
+    state.result=null; state.preview=null; fileListEl.innerHTML=""; resultArea.classList.add("hidden");
+    window.scrollTo({top:0, behavior:"smooth"});
+  });
+
+  $("btnPreviewBack").addEventListener("click", function(){
+    state.preview=null; render();
+  });
+})();
+</script>
+</body>
+</html>
