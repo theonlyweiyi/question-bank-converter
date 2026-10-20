@@ -1,0 +1,169 @@
+{
+  "version": 1,
+  "updated": "2026-10-20",
+  "note": "期望值快照：改 core.js 后跑 node run_tests.js 比对；源文件合法变更后跑 node run_tests.js --update 重新固化。unavailable 条目为历史验证值，文件恢复后需 --update。",
+  "files": [
+    {
+      "name": "附件2：2026年员工岗位技能培训测试公共题库.xlsx",
+      "path": "E:/中转3/附件2：2026年员工岗位技能培训测试公共题库.xlsx",
+      "status": "unavailable",
+      "note": "E 盘当前不可访问；以下为 2026-10-19 验证时的历史值（文档性质，比对时跳过），文件恢复后跑 node run_tests.js --update 重新固化",
+      "sheets": [
+        {
+          "sheet": "单选",
+          "layout": "竖排",
+          "count": 148
+        },
+        {
+          "sheet": "多选",
+          "layout": "竖排",
+          "count": 128
+        },
+        {
+          "sheet": "判断",
+          "layout": "竖排",
+          "count": 119
+        }
+      ],
+      "parsed": 395,
+      "types": null,
+      "excluded": 2,
+      "dups": null,
+      "conflicts": null,
+      "conflictsCritical": null
+    },
+    {
+      "name": "附件3：2026年运营条线岗位技能测试知识题库.xlsx",
+      "path": "E:/中转3/附件3：2026年运营条线岗位技能测试知识题库.xlsx",
+      "status": "unavailable",
+      "note": "E 盘当前不可访问；历史值：单 sheet 横排 889 题、零剔除（sheet 名未记录），文件恢复后跑 --update 重新固化",
+      "sheets": null,
+      "parsed": 889,
+      "types": null,
+      "excluded": 0,
+      "dups": null,
+      "conflicts": null,
+      "conflictsCritical": null
+    },
+    {
+      "name": "附件1：2024年产品管理条线岗位技能测试知识题库.xlsx",
+      "path": "D:/desktop/银行文件/2024题库/附件1：2024年产品管理条线岗位技能测试知识题库.xlsx",
+      "status": "available",
+      "sheets": [
+        {
+          "sheet": "产品管理条线",
+          "layout": "横排",
+          "count": 239
+        }
+      ],
+      "parsed": 239,
+      "types": {
+        "单选题": 111,
+        "多选题": 45,
+        "判断题": 83
+      },
+      "excluded": 0,
+      "dups": 0,
+      "conflicts": 0,
+      "conflictsCritical": 0,
+      "typeMismatch": 0,
+      "warnings": 0
+    },
+    {
+      "name": "附件2：2024年岗位技能培训测试公共知识题库.xlsx",
+      "path": "D:/desktop/银行文件/2024题库/附件2：2024年岗位技能培训测试公共知识题库.xlsx",
+      "status": "available",
+      "sheets": [
+        {
+          "sheet": "单选",
+          "layout": "竖排",
+          "count": 141
+        },
+        {
+          "sheet": "多选",
+          "layout": "竖排",
+          "count": 114
+        },
+        {
+          "sheet": "判断",
+          "layout": "竖排",
+          "count": 91
+        }
+      ],
+      "parsed": 346,
+      "types": {
+        "单选题": 141,
+        "多选题": 114,
+        "判断题": 91
+      },
+      "excluded": 0,
+      "dups": 5,
+      "conflicts": 0,
+      "conflictsCritical": 0,
+      "typeMismatch": 0,
+      "warnings": 0
+    },
+    {
+      "name": "附件：广西农村合作金融机构2023年信贷岗位资格认证考试试题库.xls",
+      "path": "D:/desktop/银行文件/2024题库/附件：广西农村合作金融机构2023年信贷岗位资格认证考试试题库.xls",
+      "status": "available",
+      "sheets": [
+        {
+          "sheet": "试题库",
+          "layout": "横排",
+          "count": 1796
+        }
+      ],
+      "parsed": 1796,
+      "types": {
+        "单选题": 627,
+        "多选题": 470,
+        "判断题": 699
+      },
+      "excluded": 1,
+      "dups": 8,
+      "conflicts": 2,
+      "conflictsCritical": 1,
+      "typeMismatch": 4,
+      "warnings": 8
+    }
+  ],
+  "finalize_all": {
+    "files": [
+      "附件1：2024年产品管理条线岗位技能测试知识题库.xlsx",
+      "附件2：2024年岗位技能培训测试公共知识题库.xlsx",
+      "附件：广西农村合作金融机构2023年信贷岗位资格认证考试试题库.xls"
+    ],
+    "total": 2344,
+    "types": {
+      "单选题": 874,
+      "多选题": 627,
+      "判断题": 843
+    },
+    "excluded": 1,
+    "dups": 36,
+    "conflicts": 57,
+    "conflictsCritical": 4,
+    "typeMismatch": 4,
+    "warnings": 8
+  },
+  "finalize_all5_historical": {
+    "files": [
+      "附件2：2026年员工岗位技能培训测试公共题库.xlsx",
+      "附件3：2026年运营条线岗位技能测试知识题库.xlsx",
+      "附件1：2024年产品管理条线岗位技能测试知识题库.xlsx",
+      "附件2：2024年岗位技能培训测试公共知识题库.xlsx",
+      "附件：广西农村合作金融机构2023年信贷岗位资格认证考试试题库.xls"
+    ],
+    "total": 3571,
+    "types": {
+      "单选题": 1316,
+      "多选题": 1040,
+      "判断题": 1215
+    },
+    "excluded": 3,
+    "dups": 91,
+    "conflicts": null,
+    "note": "2026-10-19 五文件全量验证记录；conflicts 为后续新增检测项当时未统计，E 盘恢复后重新固化"
+  }
+}
