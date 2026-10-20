@@ -1,0 +1,8 @@
+node_modules/
+*.log
+e2e_download.xlsx
+e2e_shot.png
+test-fixtures/
+.DS_Store
+Thumbs.db
+desktop.ini
